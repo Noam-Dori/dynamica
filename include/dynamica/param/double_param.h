@@ -19,11 +19,9 @@ namespace dynamica {
     public:
         std::string getName() const;
 
-        void prepGroup(Group &group);
+        void prepInfo(ParamInfoList &info_list);
 
-        void prepConfig(Config &conf);
-
-        void prepConfigDescription(ConfigDescription &conf_desc);
+        void prepValue(ParamValueList &value_list, uint8_t attribute);
 
         int getLevel() const;
 

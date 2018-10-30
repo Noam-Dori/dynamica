@@ -7,10 +7,19 @@
 
 #include <string>
 #include <boost/shared_ptr.hpp>
+#include <dynamica/ParamInfoList.h>
+#include <dynamica/ParamValueList.h>
 
 #include "value.h"
 
 namespace dynamica {
+    enum Attribute {
+        VALUE = 0,
+        DEFAULT = 1,
+        MAX = 2,
+        MIN = 3
+    };
+
     class Param;// declaration for the sake of order.
     // this is the pointer to any type of Dynamic Dynamic parameter.
     typedef boost::shared_ptr<Param> ParamPtr;
@@ -26,7 +35,7 @@ namespace dynamica {
      *        Other than storing data, the parameter also has specialised methods to interact with DDynamicReconfigure in order to apply changes and send them.
      *        These methods should not be touched by the user.
      *
-     *        Since this class is abstract, the class has multiple implementations whicch are not directly exposed but are used,
+     *        Since this class is abstract, the class has multiple implementations which are not directly exposed but are used,
      *        so its worth checking out their descriptions.
      *
      *        While this class is abstract, it does have one implemented thing, and that is its stream operator (`<<`) which can be freely used.
@@ -87,25 +96,18 @@ namespace dynamica {
         virtual void setValue(Value val) = 0;
 
         /**
-         * @brief updates a group message according to this param's info.
-         * @param group the group to update.
+         * @brief add the information about this parameter to the info list.
+         * @param info_list the group to update.
          * @note this is an internal method. It is recommended not to use it.
          */
-        virtual void prepGroup(Group &group) = 0;
+        virtual void prepInfo(ParamInfoList &info_list) = 0;
 
         /**
          * @brief updates a config message according to this param's info.
-         * @param conf the group to update.
+         * @param value_list the group to update.
          * @note this is an internal method. It is recommended not to use it.
          */
-        virtual void prepConfig(Config &conf) = 0;
-
-        /**
-         * @brief updates a config description message according to this param's info.
-         * @param conf_desc the config description to update.
-         * @note this is an internal method. It is recommended not to use it.
-         */
-        virtual void prepConfigDescription(ConfigDescription &conf_desc) = 0;
+        virtual void prepValue(ParamValueList &value_list, uint8_t attribute) = 0;
 
         /**
          * @brief the operator taking care of streaming the param values

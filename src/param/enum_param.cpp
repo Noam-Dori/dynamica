@@ -20,14 +20,13 @@ namespace dynamica {
         return ret;
     };
 
-    void EnumParam::prepGroup(Group &group) {
-        ParamDescription desc;
+    void EnumParam::prepInfo(ParamInfoList &info_list) {
+        ParamInfo desc;
         desc.name  = name_;
         desc.level = level_;
         desc.description = desc_;
-        desc.type = "int";
-        desc.edit_method = makeEditMethod();
-        group.parameters.push_back(desc);
+        desc.type = "enum";
+        info_list.entries.push_back(desc);
     }
 
     bool EnumParam::sameType(Value val) {

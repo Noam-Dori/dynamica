@@ -5,12 +5,9 @@
 # array indices would be fully numerical.
 string name
 
-# how severe will changing this file be? each bit in this is used as an arbitrary flag so use it to your advantage
-uint32 level
+string OBJECT = ##obj##
+string ARRAY = ##arr##
+string DELETE = ##del##
 
-# what does this parameter mean?
-string description
-
-# what base datatype should this parameter be parsed into?
-# some options are int,double,string,array,etc...
-string type
+# generic value for this parameter. see above for default indicators
+string value

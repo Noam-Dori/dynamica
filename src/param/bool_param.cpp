@@ -11,31 +11,28 @@ namespace dynamica {
         return name_;
     }
 
-    void BoolParam::prepGroup(Group &group) {
-        ParamDescription desc;
+    void BoolParam::prepInfo(ParamInfoList &info_list) {
+        ParamInfo desc;
         desc.name  = name_;
         desc.level = level_;
         desc.description = desc_;
         desc.type = "bool";
-        group.parameters.push_back(desc);
+        info_list.entries.push_back(desc);
     }
 
-    void BoolParam::prepConfig(Config &conf) {
-        BoolParameter param;
+    void BoolParam::prepValue(ParamValueList &value_list, uint8_t attribute) {
+        ParamValue param;
         param.name = name_;
-        param.value = (unsigned char)val_;
-        conf.bools.push_back(param);
-    }
-
-    void BoolParam::prepConfigDescription(ConfigDescription &conf_desc) {
-        BoolParameter param;
-        param.name = name_;
-        param.value = (unsigned char)def_;
-        conf_desc.dflt.bools.push_back(param);
-        param.value = (unsigned char)true;
-        conf_desc.max.bools.push_back(param);
-        param.value = (unsigned char)false;
-        conf_desc.min.bools.push_back(param);
+        switch (attribute) {
+            case VALUE:
+                param.value = Value(val_).toString();
+                break;
+            case DEFAULT:
+                param.value = Value(def_).toString();
+                break;
+            default:break;
+        }
+        value_list.entries.push_back(param);
     }
 
     int BoolParam::getLevel() const {

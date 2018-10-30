@@ -11,31 +11,34 @@ namespace dynamica {
         return name_;
     }
 
-    void DoubleParam::prepGroup(Group &group) {
-        ParamDescription desc;
+    void DoubleParam::prepInfo(ParamInfoList &info_list) {
+        ParamInfo desc;
         desc.name  = name_;
         desc.level = level_;
         desc.description = desc_;
         desc.type = "double";
-        group.parameters.push_back(desc);
+        info_list.entries.push_back(desc);
     }
 
-    void DoubleParam::prepConfig(Config &conf) {
-        DoubleParameter param;
+    void DoubleParam::prepValue(ParamValueList &value_list, uint8_t attribute) {
+        ParamValue param;
         param.name = name_;
-        param.value = val_;
-        conf.doubles.push_back(param);
-    }
-
-    void DoubleParam::prepConfigDescription(ConfigDescription &conf_desc) {
-        DoubleParameter param;
-        param.name = name_;
-        param.value = def_;
-        conf_desc.dflt.doubles.push_back(param);
-        param.value = max_;
-        conf_desc.max.doubles.push_back(param);
-        param.value = min_;
-        conf_desc.min.doubles.push_back(param);
+        switch (attribute) {
+            case VALUE:
+                param.value = Value(val_).toString();
+                break;
+            case DEFAULT:
+                param.value = Value(def_).toString();
+                break;
+            case MAX:
+                param.value = Value(max_).toString();
+                break;
+            case MIN:
+                param.value = Value(min_).toString();
+                break;
+            default:break;
+        }
+        value_list.entries.push_back(param);
     }
 
     int DoubleParam::getLevel() const {

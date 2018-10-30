@@ -11,31 +11,28 @@ namespace dynamica {
         return name_;
     }
 
-    void StringParam::prepGroup(Group &group) {
-        ParamDescription desc;
+    void StringParam::prepInfo(ParamInfoList &info_list) {
+        ParamInfo desc;
         desc.name  = name_;
         desc.level = level_;
         desc.description = desc_;
         desc.type = "string";
-        group.parameters.push_back(desc);
+        info_list.entries.push_back(desc);
     }
 
-    void StringParam::prepConfig(Config &conf) {
-        StrParameter param;
+    void StringParam::prepValue(ParamValueList &value_list, uint8_t attribute) {
+        ParamValue param;
         param.name = name_;
-        param.value = val_;
-        conf.strs.push_back(param);
-    }
-
-    void StringParam::prepConfigDescription(ConfigDescription &conf_desc) {
-        StrParameter param;
-        param.name = name_;
-        param.value = def_;
-        conf_desc.dflt.strs.push_back(param);
-        param.value = "";
-        conf_desc.max.strs.push_back(param);
-        param.value = "";
-        conf_desc.min.strs.push_back(param);
+        switch (attribute) {
+            case VALUE:
+                param.value = val_;
+                break;
+            case DEFAULT:
+                param.value = def_;
+                break;
+            default:break;
+        }
+        value_list.entries.push_back(param);
     }
 
     int StringParam::getLevel() const {

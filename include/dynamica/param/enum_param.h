@@ -19,7 +19,7 @@ namespace dynamica {
     class EnumParam : virtual public IntParam {
     public:
 
-        void prepGroup(Group &group);
+        void prepInfo(ParamInfoList &info_list);
 
         bool sameType(Value val);
 

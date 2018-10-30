@@ -49,9 +49,8 @@ package dd_param <<Rectangle>> {
         +{abstract} sameType() : bool
         +{abstract} sameValue() : bool
         ..internal..
-        +{abstract} prepGroup() : void
-        +{abstract} prepConfig() : void
-        +{abstract} prepConfigDescription() : void
+        +{abstract} prepInfo() : void
+        +{abstract} prepValue() : void
     }
     class IntParam {
         #level_ : u_int

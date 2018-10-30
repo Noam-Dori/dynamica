@@ -11,31 +11,34 @@ namespace dynamica {
         return name_;
     }
 
-    void IntParam::prepGroup(Group &group) {
-        ParamDescription desc;
+    void IntParam::prepInfo(ParamInfoList &info_list) {
+        ParamInfo desc;
         desc.name  = name_;
         desc.level = level_;
         desc.description = desc_;
         desc.type = "int";
-        group.parameters.push_back(desc);
+        info_list.entries.push_back(desc);
     }
 
-    void IntParam::prepConfig(Config &conf) {
-        IntParameter param;
+    void IntParam::prepValue(ParamValueList &value_list, uint8_t attribute) {
+        ParamValue param;
         param.name = name_;
-        param.value = val_;
-        conf.ints.push_back(param);
-    }
-
-    void IntParam::prepConfigDescription(ConfigDescription &conf_desc) {
-        IntParameter param;
-        param.name = name_;
-        param.value = def_;
-        conf_desc.dflt.ints.push_back(param);
-        param.value = max_;
-        conf_desc.max.ints.push_back(param);
-        param.value = min_;
-        conf_desc.min.ints.push_back(param);
+        switch (attribute) {
+            case VALUE:
+                param.value = Value(val_).toString();
+                break;
+            case DEFAULT:
+                param.value = Value(def_).toString();
+                break;
+            case MAX:
+                param.value = Value(max_).toString();
+                break;
+            case MIN:
+                param.value = Value(min_).toString();
+                break;
+            default:break;
+        }
+        value_list.entries.push_back(param);
     }
 
     int IntParam::getLevel() const {

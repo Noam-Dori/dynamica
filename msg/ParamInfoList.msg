@@ -1,4 +1,5 @@
-# this message is sent only once and contains details about all available parameters.
+# this message is sent to update some value in the clients or server:
+# current values, default values, minimums, maximums.
 
 Header header
 ParamInfo[] entries

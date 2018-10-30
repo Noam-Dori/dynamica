@@ -68,7 +68,7 @@ namespace dynamica {
 
         // action 4 - prepping the Config msg for all params
         conf.groups.push_back(group_state);
-        for(ParamMap::const_iterator it = params_.begin(); it != params_.end(); it++) {it->second->prepConfig(conf);}
+        for(ParamMap::const_iterator it = params_.begin(); it != params_.end(); it++) { it->second->prepValue(conf, 0);}
         return conf;
     }
 
@@ -78,7 +78,7 @@ namespace dynamica {
 
         // action 1 - prepping the Group msg for all params
         group.name = "default";
-        for(ParamMap::const_iterator it = params_.begin(); it != params_.end(); it++) {it->second->prepGroup(group);}
+        for(ParamMap::const_iterator it = params_.begin(); it != params_.end(); it++) { it->second->prepInfo(group);}
 
         // action 2 - prepping the ConfigDescription msg for all params
         for(ParamMap::const_iterator it = params_.begin(); it != params_.end(); it++) {it->second->prepConfigDescription(conf_desc);}
