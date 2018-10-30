@@ -1,0 +1,44 @@
+@startuml
+package dyn_file as dyn_file_pkg {
+    file dynamica.h as dyn_file {
+        component "at()" as at
+        component "get()" as get
+        component Dynamica as dynamica_cls
+
+        dynamica_cls .u.> at
+        dynamica_cls .u.> get
+    }
+    file param.h as param_file
+    folder param as param_pkg {
+        file int_param.h as int
+        file double_param.h as double
+        file bool_param.h as bool
+        file string_param.h as string
+        file enum_param.h as enum
+'        file array_param.h as array
+'        file object_param.h as object
+        file all_params.h as all
+
+        int -u-> param_file
+        double -u-> param_file
+        bool -u-> param_file
+        string -u-> param_file
+        enum -u-> int
+'        array -u-> param_file
+'        object -u-> param_file
+        all -u-> int
+        all -u--> double
+        all -u--> bool
+        all -u--> string
+        all -u-> enum
+'        all -u--> array
+'        all -u--> object
+    }
+    file value.h as value
+    dyn_file --> param_file
+    param_file -> value
+}
+component "ROS\nnode" as server
+server --> all
+server -> dyn_file
+@enduml

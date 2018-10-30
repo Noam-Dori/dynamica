@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
     <package format="2">
     <name>dynamica</name>
-    <version>1.0</version>
+    <version>1.0.0</version>
     <description>Allows persistent and dynamic reconfiguration of parameters in a JSON-like manner</description>
 
     <maintainer email="theNODO55@gmail.com">Noam Dori</maintainer>

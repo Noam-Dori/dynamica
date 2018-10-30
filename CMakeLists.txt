@@ -24,16 +24,16 @@ catkin_package(INCLUDE_DIRS include LIBRARIES ${PROJECT_NAME} CATKIN_DEPENDS ${R
 ## Library ##
 #############
 
-#include_directories(include ${catkin_INCLUDE_DIRS})
-#add_library(${PROJECT_NAME}
-#        src/ddynamic_reconfigure.cpp
-#        src/param/dd_int_param.cpp
-#        src/param/dd_double_param.cpp
-#        src/param/dd_bool_param.cpp
-#        src/param/dd_string_param.cpp
-#        src/param/dd_enum_param.cpp
-#        src/dd_param.cpp)
-#target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
+include_directories(include ${catkin_INCLUDE_DIRS})
+add_library(${PROJECT_NAME}
+        src/dynamica.cpp
+        src/param/int_param.cpp
+        src/param/double_param.cpp
+        src/param/bool_param.cpp
+        src/param/string_param.cpp
+        src/param/enum_param.cpp
+        src/param.cpp)
+target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 
 #############
 ## Install ##
@@ -54,10 +54,10 @@ if (CATKIN_ENABLE_TESTING)
     find_package(rostest REQUIRED)
 
 #    ## DDynamic tester
-#    add_rostest_gtest(ddynamic_reconfigure-test test/ddynamic_reconfigure.test test/test_ddynamic_reconfigure.cpp)
-#    target_link_libraries(ddynamic_reconfigure-test ${PROJECT_NAME})
+#    add_rostest_gtest(dynamica-test test/dynamica.test test/test_ddynamic_reconfigure.cpp)
+#    target_link_libraries(dynamica-test ${PROJECT_NAME})
 #
-#    ## DDParam tester
+#    ## Param tester
 #    foreach (param_type int double bool string enum)
 #        add_rostest_gtest(dd_${param_type}-test test/dd_param/dd_${param_type}.test test/dd_param/test_dd_${param_type}.cpp)
 #        target_link_libraries(dd_${param_type}-test ${PROJECT_NAME})

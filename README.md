@@ -3,7 +3,7 @@ Dynamica
 
 Dynamica is the successor to the ROS standard package [dynamic_reconfigure](http://wiki.ros.org/dynamic_reconfigure).
 It includes the features included in its extensions 
-[ddynamic_reconfigure](https://github.com/awesomebytes/ddyanmic_reconfigure) 
+[ddyanmic_reconfigure](https://github.com/awesomebytes/ddaynmic_reconfigure) 
 and [3d_reconfigure](https://github.com/wew84/3d_reconfigure)
 
 ## Dependencies
@@ -35,7 +35,7 @@ let us look into the following code, which implements Dynamica:
 
 using namespace dynamica;
 
-void callback(const DDMap& map, int) {
+void callback(const ParamMap& map, int) {
     ROS_INFO("Reconfigure Request: %d %f %s %s %ld",
             get(map, "int_param").toInt(), get(map, "double_param").toDouble(),
             get(map, "str_param").toString().c_str(),
@@ -50,16 +50,16 @@ int main(int argc, char **argv) {
 
     // DDynamic setup stage
     DDynamicReconfigure dd(nh);
-    dd.add(new DDInt("int_param", 0, "An Integer parameter", 50, 0, 100));
-    dd.add(new DDDouble("double_param", 0, "A double parameter", .5, 0, 1));
-    dd.add(new DDString("str_param", 0, "A string parameter", "Hello World"));
-    dd.add(new DDBool("bool_param", 0, "A Boolean parameter", true));
+    dd.add(new IntParam("int_param", 0, "An Integer parameter", 50, 0, 100));
+    dd.add(new DoubleParam("double_param", 0, "A double parameter", .5, 0, 1));
+    dd.add(new StringParam("str_param", 0, "A string parameter", "Hello World"));
+    dd.add(new BoolParam("bool_param", 0, "A Boolean parameter", true));
     std::map<std::string, int> dict; // An enum to set size
         dict["Small"] = 0;      // A small constant
         dict["Medium"] = 1;     // A medium constant
         dict["Large"] = 2;      // A large constant
         dict["ExtraLarge"] = 3; // An extra large constant
-    dd.add(new DDEnum("enum_param", 0, "A size parameter which is edited via an enum", 1, dict));
+    dd.add(new EnumParam("enum_param", 0, "A size parameter which is edited via an enum", 1, dict));
     dd.start(callback);
 
     // Actual Server Node code
@@ -92,7 +92,7 @@ without mentioning what package they are from.
 In contrast to dynamic_reconfigure, these do not change.
 
 ```cpp
-void callback(const DDMap& map, int) {
+void callback(const ParamMap& map, int) {
     ROS_INFO("Reconfigure Request: %d %f %s %s %ld",
             get(map, "int_param").toInt(), get(map, "double_param").toDouble(),
             get(map, "str_param").toString().c_str(),
@@ -121,18 +121,18 @@ This is default stuff you do anyways.
 ```cpp
     // DDynamic setup stage
     DDynamicReconfigure dd(nh);
-    dd.add(new DDInt("int_param", 0, "An Integer parameter", 50, 0, 100));
-    dd.add(new DDDouble("double_param", 0, "A double parameter", .5, 0, 1));
-    dd.add(new DDString("str_param", 0, "A string parameter", "Hello World"));
-    dd.add(new DDBool("bool_param", 0, "A Boolean parameter", true));
+    dd.add(new IntParam("int_param", 0, "An Integer parameter", 50, 0, 100));
+    dd.add(new DoubleParam("double_param", 0, "A double parameter", .5, 0, 1));
+    dd.add(new StringParam("str_param", 0, "A string parameter", "Hello World"));
+    dd.add(new BoolParam("bool_param", 0, "A Boolean parameter", true));
 ```
 
 This is we start using Dynamica. First, we initialise our Dynamica object.
 Then, we start adding parameters to it. In Dynamica, adding parameters is not just a simple function,
-but you have to add a parameter object (an instance of the abstract ``DDParam`` class).
+but you have to add a parameter object (an instance of the abstract ``Param`` class).
 Let's look into the param objects above to see some common factors:
 * The type of the parameter is declared first by specifying ``new DDType()``.
-  For example, adding a new int parameter is done by doing ``dd.add(new DDInt(...))``
+  For example, adding a new int parameter is done by doing ``dd.add(new IntParam(...))``
 
 * Within the param constructor, the first argument is the name of the parameter.
   For example, in our int parameter, the name is set to ``"int_param"``.
@@ -145,7 +145,7 @@ Let's look into the param objects above to see some common factors:
 
 * The fourth parameter is the default value. Depending on the type of parameter, each may treat this argument differently.
 
-* ``DDInt`` and ``DDDouble`` have a fifth and sixth optional parameters: minimum and maximum allowed values.
+* ``IntParam`` and ``DoubleParam`` have a fifth and sixth optional parameters: minimum and maximum allowed values.
   While the server side does not care about these values, the client may want to know these.
 
 * It is important to note that the first 4 arguments are standardised for all param types,
@@ -157,11 +157,11 @@ Let's look into the param objects above to see some common factors:
         dict["Medium"] = 1;     // A medium constant
         dict["Large"] = 2;      // A large constant
         dict["ExtraLarge"] = 3; // An extra large constant
-    dd.add(new DDEnum("enum_param", 0, "A size parameter which is edited via an enum", 1, dict));
+    dd.add(new EnumParam("enum_param", 0, "A size parameter which is edited via an enum", 1, dict));
 ```
 
-Here we add an int-enum parameter to our Dynamica. ``DDEnum`` is an int like parameter that also contains a dictionary
-to remap predefined strings to usable integers. This param type has a required 5th argument (in contract to ``DDInt`` having 5th and 6th optional)
+Here we add an int-enum parameter to our Dynamica. ``EnumParam`` is an int like parameter that also contains a dictionary
+to remap predefined strings to usable integers. This param type has a required 5th argument (in contract to ``IntParam`` having 5th and 6th optional)
 which is a ``std::map<std::string,int>`` object mapping string values to integers.
 
 In the code above we can see how to create a dictionary of our liking:
@@ -222,10 +222,10 @@ exit(gen.generate(PACKAGE, "dynamic_tutorials", "Tutorials"))
 ```cpp
 DDynamicReconfigure dd(nh);
 
-dd.add(new DDInt("int_param", 0, "An Integer parameter", 50, 0, 100));
-dd.add(new DDDouble("double_param", 0, "A double parameter", .5, 0, 1));
-dd.add(new DDString("str_param", 0, "A string parameter", "Hello World"));
-dd.add(new DDBool("bool_param", 0, "A Boolean parameter", true));
+dd.add(new IntParam("int_param", 0, "An Integer parameter", 50, 0, 100));
+dd.add(new DoubleParam("double_param", 0, "A double parameter", .5, 0, 1));
+dd.add(new StringParam("str_param", 0, "A string parameter", "Hello World"));
+dd.add(new BoolParam("bool_param", 0, "A Boolean parameter", true));
 
 std::map<std::string, int> dict; // An enum to set size
     dict["Small"] = 0;      // A small constant
@@ -233,16 +233,16 @@ std::map<std::string, int> dict; // An enum to set size
     dict["Large"] = 2;      // A large constant
     dict["ExtraLarge"] = 3; // An extra large constant
 
-dd.add(new DDEnum("enum_param", 0, "A size parameter which is edited via an enum", 1, dict));
+dd.add(new EnumParam("enum_param", 0, "A size parameter which is edited via an enum", 1, dict));
 
 dd.start(callback);
 ```
 While these two code snippets accomplish the exact same things, they do so in different manners:
-* dynamic_reconfigure specifies the type of the parameter using a string (for example ``int_t = "int"``), while Dynamica uses classes to accomplish that (``new DDInt`` in place of ``int_t``).
+* dynamic_reconfigure specifies the type of the parameter using a string (for example ``int_t = "int"``), while Dynamica uses classes to accomplish that (``new IntParam`` in place of ``int_t``).
   
   Why classes instead of strings? In contrast to strings, classes can be extended and modified so they get a special treatment.
   Take enums for example. In order to work with enums, dynamic_reconfigure had to add a whole new parameter input to handle the dictionary of the enums,
-  while Dynamica simply extended the ``DDInt`` class (to ``DDEnum``) to handle dictionaries.
+  while Dynamica simply extended the ``IntParam`` class (to ``EnumParam``) to handle dictionaries.
   
   This will be discussed more thoroughly on "Architecture".
   
@@ -250,7 +250,7 @@ While these two code snippets accomplish the exact same things, they do so in di
     * Dynamica uses well defined standard C++ objects for its dictionaries,
       while dynamic_reconfigure defines its own constants and enums. This allows you to use well known and reliable API instead of a loosely defined one.
   
-    * while ``DDEnum`` is an extension of ``DDInt``, you do not need to mention that. The API takes care of that for you!
+    * while ``EnumParam`` is an extension of ``IntParam``, you do not need to mention that. The API takes care of that for you!
       An added bonus of this is that the enums automatically inference their boundaries, you don't need to mention ``int_t, max, min``.
       
     * Dynamica's supported physical enums have been stripped of descriptions and the constants were as well.
@@ -289,7 +289,7 @@ int main(int argc, char **argv) {
 ```
 **Dynamica:**
 ```cpp
-void callback(const DDMap& map, int) {
+void callback(const ParamMap& map, int) {
     ROS_INFO("Reconfigure Request: %d %f %s %s %ld",
             get(map, "int_param").toInt(), get(map, "double_param").toDouble(),
             get(map, "str_param").toString().c_str(),
@@ -312,11 +312,11 @@ int main(int argc, char **argv) {
 ```
 
 * The callback of the dynamic_reconfigure requires a custom data-type per configuration. This is problematic, especially if you want dynamic parameters like vectors.
-  Dynamica uses ``DDMap`` as its parameter container, which is generic and can work over multiple config types (and therefore can handle vectors)
+  Dynamica uses ``ParamMap`` as its parameter container, which is generic and can work over multiple config types (and therefore can handle vectors)
   
   This also changes the way to access these parameters.
-  ``DDMap`` is actually a map from string to a pointer to the generic parameter used with the parameter generator.
-  This allows you to use all functions ``std::map`` provides, and regardless, Dynamica has additional API that could be used on ``DDMap`` objects,
+  ``ParamMap`` is actually a map from string to a pointer to the generic parameter used with the parameter generator.
+  This allows you to use all functions ``std::map`` provides, and regardless, Dynamica has additional API that could be used on ``ParamMap`` objects,
   such as ``dynamica::get`` and ``dynamica::at``.
   
   The generic interface no longer gives you a specific primitive value, but rather an instance of ``dynamica::Value``,
@@ -366,9 +366,9 @@ The value does not just use an implicit cast. It tries to convert the data-type 
 For example, converting a string to an int, a Value will first attempt to scan the string and see it fits a numeric format.
 If it succeeds, it will convert and return that number. Otherwise, it will return the next best thing: a hash value of the string.
 
-#### DDParam
+#### Param
 
-The DDParam class is *the* abstraction of all parameter types, and is the template for creating them.
+The Param class is *the* abstraction of all parameter types, and is the template for creating them.
 At this point, not much is known about the parameter, but the following:
 
 * the parameter has a name
@@ -386,7 +386,7 @@ While this class is abstract, it does have one implemented thing, and that is it
 
 ##### Generic Constructor
 
-While DDParam is abstract, all of its concrete implementations should follow this guideline:
+While Param is abstract, all of its concrete implementations should follow this guideline:
 ```cpp
 DD<Type>(const string &name, unsigned int level, const string &description, <some-type> def, <extra-args>)
 ```
@@ -452,10 +452,10 @@ sets the handler to the one you are using.
 
 All parameter handling is done through registration using an ``add`` function:
 
-* ``add(DDPtr param)`` is the main function which uses boost's shared pointers to represent the data in a virtual manner (and allows polymorphism)
-* ``add(DDParam *param)`` is a convenience function which converts ``param`` into a shared pointer and uses the other add function.
+* ``add(ParamPtr param)`` is the main function which uses boost's shared pointers to represent the data in a virtual manner (and allows polymorphism)
+* ``add(Param *param)`` is a convenience function which converts ``param`` into a shared pointer and uses the other add function.
 
-Both of these functions will add a generic ``DDParam`` object into the given instance and will index it for later searches.
+Both of these functions will add a generic ``Param`` object into the given instance and will index it for later searches.
 Perhaps in the future a "remove(string name)" function will be added.
 
 ##### Callback Handling & Startup
@@ -463,16 +463,16 @@ Perhaps in the future a "remove(string name)" function will be added.
 Below are the two default functions that are used by the rest:
 
 * ``start()`` initializes all publishers and services and releases the needed messages for the commandline and other clients.
-* ``setCallback(DDFunc callback)`` sets the triggered callback to the one specified, and triggers nothing else.
+* ``setCallback(ReconfigureFunction callback)`` sets the triggered callback to the one specified, and triggers nothing else.
 
 There is also ``clearCallback()`` which resets the callback to do nothing when triggered.
 
 Following are convenience function which utilize ``start()`` and ``setCallback()``:
 
-* ``start(DDFunc callback)`` calls start(), then setCallback(callback)
-* ``start(void(*callback)(const DDMap&, int))`` remaps the void pointer to a boost function (of type ``DDFunc``) then calls start(callback)
-* ``template<class T> void start(void(T::*callback)(const DDMap&, int), T *obj)``
-  binds the **member** function into a boost function (of type ``DDFunc``) then calls start(callback)
+* ``start(ReconfigureFunction callback)`` calls start(), then setCallback(callback)
+* ``start(void(*callback)(const ParamMap&, int))`` remaps the void pointer to a boost function (of type ``ReconfigureFunction``) then calls start(callback)
+* ``template<class T> void start(void(T::*callback)(const ParamMap&, int), T *obj)``
+  binds the **member** function into a boost function (of type ``ReconfigureFunction``) then calls start(callback)
 
 ##### Parameter Fetching
 
@@ -487,7 +487,7 @@ There are multiple proper ways to get the values stored within the DDynamicRecon
 * through the stream (``<<``) operator: this will convert the Dynamica instance into a string and stream it into the
   given streamer.
 
-both ``at`` and ``get`` have alternate static versions which apply directly on ``DDMap`` objects.
+both ``at`` and ``get`` have alternate static versions which apply directly on ``ParamMap`` objects.
 
 ## Architecture
 
@@ -500,10 +500,10 @@ both ``at`` and ``get`` have alternate static versions which apply directly on `
 To operate Dynamica, you will need to include 2 file types:
 
 * The ``dynamica`` file, which gives you access to the ``DDynamicReconfigure`` class,
-  the ``DDParam`` class, the ``DDValue`` class, and the toolbox methods.
+  the ``Param`` class, the ``DDValue`` class, and the toolbox methods.
   This will allow you to operate on the top level API without caring about what type of parameters you will get.
 
-* the file ``dd_all_params`` or any of the ``DDParam`` implementations. You will need the implementations to insert physical 
+* the file ``dd_all_params`` or any of the ``Param`` implementations. You will need the implementations to insert physical 
   (and not abstract) parameters into your ``DDynamicReconfigure`` server.
   As a shortcut, ``dd_all_params`` gives you all basic parameter types (int,double,bool,string,enum) in one include.
 
@@ -513,19 +513,19 @@ As a bonus, you also get two static class-less methods: ``get`` and ``at``.
 
 ![](http://www.plantuml.com/plantuml/png/3OnBIyD054Rt_HMwS6d6HmDH43EIZRfgmOBTX7dS96Fc4Uwzqw7_te5lzN7EwOaLSWv-T-kYyTb2Hd-pC6_qAWIgqioEbwmp0PeK6I8t9WMX2b0AeAyC9AozHXMS6H4gCxav8uW2fTlVMxY8MXV6AwAH6BFXPglFEwSLuflyF3wWXDFJYlmrdDpXyNl_yN9e_xhsz-UevKgjFbzWAlBkUQZRzH1jrVy1)
 
-Like the API section shows, there are only 3 major classes: ``DDValue``,``DDParam``,``DDynamicReconfigure``.
+Like the API section shows, there are only 3 major classes: ``DDValue``,``Param``,``DDynamicReconfigure``.
 
 The DDValue class is a concrete class which should not be inherited, since it wraps physical values. 
 Each instance stores 5 values: one for each type is can handle, and one to store the type.
 When a value is instantiated, the value is stored in its raw form according to the chosen type,
 and the rest stay with default values. When the value is accessed only then is the value converted (but not saved!)
 
-The DDParam interface class is an abstract class which should be implemented. 
+The Param interface class is an abstract class which should be implemented. 
 Its basic implementations (int,double,bool,string) have already been implemented in the standard package.
-These basic forms can also be further extended. For example, DDEnum **extends** DDInt because it has all of the features DDInt has.
-This can be done to other DDParam implementations, and you can also further extend the extended classes (for example, DDInvertibleEnum).
+These basic forms can also be further extended. For example, EnumParam **extends** IntParam because it has all of the features IntParam has.
+This can be done to other Param implementations, and you can also further extend the extended classes (for example, DDInvertibleEnum).
 An example is given at the Extension section if you want to look more into this.
-When anny DDParam implementation is extended, the user has access to everything within the object so that he can do what he needs to.
+When anny Param implementation is extended, the user has access to everything within the object so that he can do what he needs to.
 
 The DDynamicReconfigure class is the concrete class that does the work against ROS and interfaces with the user.
 Unlike DDValue, this class can be extended, and it has an internal API that can aid users who wish to extend this class.
@@ -554,32 +554,32 @@ Since the DDynamicReconfigure object is held on the server side, so are these RO
 
 To add a new parameter type, you must either:
 * Extend one of the existing classes
-* Implement the base class, ``DDParam``.
+* Implement the base class, ``Param``.
 
-In some cases, you might want your class to extend multiple classes, for example ``DDIntVector`` both implements ``DDVector`` and extends ``DDInt``.
+In some cases, you might want your class to extend multiple classes, for example ``DDIntVector`` both implements ``DDVector`` and extends ``IntParam``.
 (``DDVector`` does not exist in the standard param library).
 
 Let us look into an example implementation of the param type "DDIntEnforcer", which will update other parameters to its value when it updates.
 
 ```cpp
-#ifndef dynamica_DD_INT_ENFORCER_PARAM_H
-#define dynamica_DD_INT_ENFORCER_PARAM_H
+#ifndef dynamica_INT_ENFORCER_PARAM_H
+#define dynamica_INT_ENFORCER_PARAM_H
 
 #include <dynamica/param/dd_int_param.h>
 #include <list>
 
 namespace my_dd_reconfig {
     // class definition
-    class DDIntEnforcer : public DDInt {
+    class DDIntEnforcer : public IntParam {
     public:
 
         void setValue(Value val);
         
         // adds a parameter to be enforced by this param.
-        DDIntEnforcer &addEnforced(DDPtr param);
+        DDIntEnforcer &addEnforced(ParamPtr param);
         
         // removes a parameter from being enforced by this param.
-        void removeEnforced(DDPtr param);
+        void removeEnforced(ParamPtr param);
 
         /**
          * creates a new int enforcer param
@@ -592,36 +592,36 @@ namespace my_dd_reconfig {
          */
         inline DDIntEnforcer(const string &name, unsigned int level, const string &description,
                 int def, int max = INT32_MAX, int min = INT32_MIN) :
-                DDInt(name,level,description,def) {};
+                IntParam(name,level,description,def) {};
 
     protected:
-        list<DDPtr> enforced_params_;
+        list<ParamPtr> enforced_params_;
     };
     
     DDIntEnforcer::setValue(Value val) {
         val_ = val.toInt();
-        for(list<DDPtr>::iterator it = enforced_params_.begin(); it != enforced_params_.end(); ++it) {
+        for(list<ParamPtr>::iterator it = enforced_params_.begin(); it != enforced_params_.end(); ++it) {
             if(!enforced_params_[it].sameValue(val)) {
                 enforced_params_[it].setValue(val);
             }
         }
     };
     
-    DDIntEnforcer &DDIntEnforcer::addEnforced(DDPtr param) {
+    DDIntEnforcer &DDIntEnforcer::addEnforced(ParamPtr param) {
         enforced_params_.push_back(param);
         return *this;
     };
     
-    void DDIntEnforcer::removeEnforced(DDPtr param) {
+    void DDIntEnforcer::removeEnforced(ParamPtr param) {
         enforced_params_.remove(param);
     };
 }
 
-#endif //dynamica_DD_INT_ENFORCER_PARAM_H
+#endif //dynamica_INT_ENFORCER_PARAM_H
 ```
 
 Notice how nothing within this class is private. This allows further extension of this class.
-Moreover, notice that in here we are also using variables inherited from ``DDInt``, specifically ``val_``.
+Moreover, notice that in here we are also using variables inherited from ``IntParam``, specifically ``val_``.
 
 ### Extending DDynamic's functions
 
