@@ -15,4 +15,6 @@
     <test_depend>gmock</test_depend>
 
     <depend>roscpp</depend>
+    <depend>message_generation</depend>
+    <depend>std_msgs</depend>
 </package>

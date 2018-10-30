@@ -1,22 +1,21 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(dynamica)
-
-find_package(catkin REQUIRED COMPONENTS roscpp message_generation)
-
 set(CMAKE_CXX_STANDARD 98)
+
+set(ROS_STANDARD_PKGS roscpp message_generation std_msgs)
+find_package(catkin REQUIRED COMPONENTS ${ROS_STANDARD_PKGS})
 
 ##############
 ## Services ##
 ##############
 
-#add_service_files(DIRECTORY test FILES TutorialParams.srv)
-#generate_messages(DEPENDENCIES std_msgs)
+add_service_files(DIRECTORY srv FILES ChangeCommand.srv)
+add_message_files(DIRECTORY msg FILES ParamInfo.msg ParamInfoList.msg ParamValue.msg ParamValueList.msg)
+generate_messages(DEPENDENCIES std_msgs)
 
 ############
 ## Catkin ##
 ############
-
-set(ROS_STANDARD_PKGS roscpp)
 
 catkin_package(INCLUDE_DIRS include LIBRARIES ${PROJECT_NAME} CATKIN_DEPENDS ${ROS_STANDARD_PKGS})
 

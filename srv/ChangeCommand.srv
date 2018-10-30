@@ -1,0 +1,16 @@
+# the list of parameters to change/add/delete
+ParamValueList new_params
+
+uint8 VALUE = 0
+uint8 DEFAULT = 1
+uint8 MAX = 2
+uint8 MIN = 3
+
+# what attribute in the parameters is changed? see above for options
+uint8 attribute
+---
+# did the reconfigure request go as planned?
+bool success
+
+# if the reconfigure request fail, what failed?
+string error_msg
