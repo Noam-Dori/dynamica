@@ -1,7 +1,7 @@
 @startuml
 component DDynamicReconfigure as ddr {
-    rectangle update_pub_ <<Publisher>> as uppub
-    rectangle desc_pub_ <<Publisher>> as descpub
+    rectangle value_pub_ <<Publisher>> as uppub
+    rectangle info_pub_ <<Publisher>> as descpub
     rectangle set_service_ <<ServiceServer>> as set
     set -[hidden]->descpub
     descpub -[hidden]->uppub

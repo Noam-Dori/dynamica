@@ -2,8 +2,8 @@
 class DDynamicReconfigure {
     #nh_ : NodeHandle
     #params_ : ParamMap
-    #desc_pub_ : Publisher
-    #update_pub_ : Publisher
+    #info_pub_ : Publisher
+    #value_pub_ : Publisher
     -callback_ : shared_ptr<ReconfigureFunction>
     -set_service_ : ServiceServer
     __
@@ -17,8 +17,8 @@ class DDynamicReconfigure {
     +at() : ParamPtr
     +operator<<() : ostream&
     ..internal..
-    #makeDescription() : void
-    #makeConfig() : void
+    #makeInfo() : void
+    #makeValues() : void
     #{static} internalCallback() : bool
     -reassign() <<T>> : int
     -getUpdates() : int

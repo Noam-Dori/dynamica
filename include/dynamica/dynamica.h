@@ -12,6 +12,7 @@
 #include <boost/bind.hpp>
 
 #include "param.h"
+#include <dynamica/ChangeCommand.h>
 
 #ifndef DYNAMICA_DYNAMICA_H
 #define DYNAMICA_DYNAMICA_H
@@ -49,7 +50,7 @@ namespace dynamica {
          * @brief adds a parameter to the list, allowing it to be generated.
          * @param param the pointer to the 2d-param to add to the list.
          */
-         virtual void add(ParamPtr param);
+         virtual void add(const ParamPtr &param);
 
         /**
          * @brief a convenience method for adding a parameter to the list, allowing it to be generated.
@@ -64,7 +65,7 @@ namespace dynamica {
          * removes the specified parameter from the list.
          * @param param the parameter to remove.
          */
-         virtual void remove(ParamPtr param);
+         virtual void remove(const ParamPtr &param);
 
         /**
          * removes the specified parameter from the list.
@@ -76,7 +77,7 @@ namespace dynamica {
          * removes the specified parameter from the list.
          * @param param_name the name of the parameter to remove.
          */
-         virtual void remove(std::string param_name);
+         virtual void remove(const std::string &param_name);
 
         /**
          * @brief sets the callback to this.
@@ -145,13 +146,13 @@ namespace dynamica {
          * @brief makes the config descriptions for publishing
          * @return a ROS message of type ConfigDescription
          */
-         ConfigDescription makeDescription();
+         ParamInfoList makeInfo();
 
         /**
          * @brief makes the config update for publishing
          * @return a ROS message of type Config
          */
-         Config makeConfig();
+         ParamValueList makeValues();
 
         /**
          * @brief calls the internal callback for the low-level service, not exposed to us.
@@ -161,7 +162,7 @@ namespace dynamica {
          * @return -------(ROS)
          * @note this is here so that deriving methods can call the internal callback.
          */
-        static bool internalCallback(Dynamica *obj, Reconfigure::Request &req, Reconfigure::Response &rsp);
+        static bool internalCallback(Dynamica *obj, ChangeCommand::Request &req, ChangeCommand::Response &rsp);
 
          /**
           * @brief the ROS node handler to use to make everything ROS related.
@@ -176,7 +177,7 @@ namespace dynamica {
           * and the publisher responsible for updating the configuration values for commandline and client (update_pub_).
           * desc_pub_ publishes to "parameter_descriptions", and update_pub_ publishes to "/parameter_updates".
           */
-         ros::Publisher desc_pub_, update_pub_;
+         ros::Publisher info_pub_, value_pub_;
 
     private:
 
@@ -191,7 +192,7 @@ namespace dynamica {
          *         otherwise the level of the parameter changed.
          */
          template <class T>
-         static int reassign(ParamMap& map, const string &name, T value);
+         static int reassign(ParamMap& map, const std::string &name, T value);
 
         /**
          * @brief gets the updates and assigns them to DDMap
@@ -199,7 +200,7 @@ namespace dynamica {
          * @param config the map to update
          * @return the level of change (integer)
          */
-         int getUpdates(const Reconfigure::Request &req, ParamMap &config);
+         int getUpdates(const ChangeCommand::Request &req, ParamMap &config);
 
          /**
           * @brief the use defined callback to call when parameters are updated.

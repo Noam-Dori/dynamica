@@ -539,8 +539,8 @@ since the base function of DDynamic should not be modified.
 
 Like dynamic_reconfigure, Dynamica is built on two subscribers and one service:
 
-* ``desc_pub_`` publishes to topic "/parameter_descriptions", and is responsible for updating the descriptions of the parameter for commandline.
-* ``update_pub_`` publishes to "/parameter_descriptions", and is responsible for updating the configuration values for commandline and client.
+* ``info_pub_`` publishes to topic "/parameter_descriptions", and is responsible for updating the descriptions of the parameter for commandline.
+* ``value_pub_`` publishes to "/parameter_descriptions", and is responsible for updating the configuration values for commandline and client.
 * ``set_service`` publishes and listens to requests on "/set_parameters", and is used to trigger parameter updates.
   It also contains the new parameters sent from client or commandline.
 
@@ -630,11 +630,11 @@ If that is the case, extending a class from DDynamic gives you access to make ne
 and access to the following to make work with DDynamic a bit easier:
 * ``nh_``: this is the node handler used to create all publishers and subscribers in the parent class.
 * ``params_`` this is the current parameter map Dynamica uses to update parameters and add new ones.
-* ``desc_pub_``: As explained before, this is the publisher responsible of updating the descriptions for the parameters and other metadata for the client and commandline.
-* ``update_pub_``: This is the publisher responsible for updating the configuration values for the client and commandline.
-* ``makeDescription()``: This is a helper method that generates a new Description message to be published by ``desc_pub_``.
+* ``info_pub_``: As explained before, this is the publisher responsible of updating the descriptions for the parameters and other metadata for the client and commandline.
+* ``value_pub_``: This is the publisher responsible for updating the configuration values for the client and commandline.
+* ``makeInfo()``: This is a helper method that generates a new Description message to be published by ``info_pub_``.
   The message can be modified.
-* ``makeConfiguration()``: This is a helper method that generates a new Description message to be published by ``update_pub_``.
+* ``makeConfiguration()``: This is a helper method that generates a new Description message to be published by ``value_pub_``.
   The message can be modified.
 * ``internalCallback()``: This is a helper method that allows you to call the base param change callback built into Dynamica.
 

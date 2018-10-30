@@ -14,6 +14,7 @@
 using namespace boost;
 using namespace std;
 using namespace ros;
+using namespace ros::this_node;
 
 namespace dynamica {
 
@@ -21,7 +22,7 @@ namespace dynamica {
         nh_ = nh;
     };
 
-    void Dynamica::add(ParamPtr param) {
+    void Dynamica::add(const ParamPtr &param) {
         params_[param->getName()] = param;
     };
 
@@ -29,7 +30,7 @@ namespace dynamica {
         add(ParamPtr(param));
     };
 
-    void Dynamica::remove(ParamPtr param) {
+    void Dynamica::remove(const ParamPtr &param) {
         remove(param->getName());
     };
 
@@ -37,53 +38,41 @@ namespace dynamica {
         remove(param->getName());
     };
 
-    void Dynamica::remove(string param_name) {
+    void Dynamica::remove(const string &param_name) {
         params_.erase(param_name);
     };
 
     void Dynamica::start() {
-        ConfigDescription conf_desc = makeDescription(); // registers defaults and max/min descriptions.
-        Config conf = makeConfig(); // the actual config file in C++ form.
+        ParamInfoList conf_desc = makeInfo(); // registers defaults and max/min descriptions.
+        ParamValueList conf = makeValues(); // the actual config file in C++ form.
 
-        function<bool(Reconfigure::Request& req, Reconfigure::Response& rsp)> callback = bind(&internalCallback,this,_1,_2);
+        function<bool(ChangeCommand::Request& req, ChangeCommand::Response& rsp)> callback = bind(&internalCallback,this,_1,_2);
         // publishes Config and ConfigDescription.
-        set_service_ = nh_.advertiseService("set_parameters", callback); // this allows changes to the parameters
+        set_service_ = nh_.advertiseService(getName() + "/set", callback); // this allows changes to the parameters
 
         // this makes the parameter descriptions
-        desc_pub_ = nh_.advertise<ConfigDescription>("parameter_descriptions", 1, true);
-        desc_pub_.publish(conf_desc);
+        info_pub_ = nh_.advertise<ParamInfoList>(getName() + "/info", 1, true);
+        info_pub_.publish(conf_desc);
 
         // this creates the type/level of everything
-        update_pub_ = nh_.advertise<Config>("parameter_updates", 1, true);
-        update_pub_.publish(conf);
+        value_pub_ = nh_.advertise<ParamValueList>(getName() + "/values", 1, true);
+        value_pub_.publish(conf);
     }
 
-    Config Dynamica::makeConfig() {
-        Config conf;
-        GroupState group_state; // I dunno, but its important?
-
-        // action 3 - prepping the GroupState msg for all params
-        group_state.name = "Default";
-        group_state.state = (unsigned char)true;
-
-        // action 4 - prepping the Config msg for all params
-        conf.groups.push_back(group_state);
-        for(ParamMap::const_iterator it = params_.begin(); it != params_.end(); it++) { it->second->prepValue(conf, 0);}
-        return conf;
+    ParamValueList Dynamica::makeValues() {
+        ParamValueList values;
+        for(ParamMap::const_iterator it = params_.begin(); it != params_.end(); it++) {
+            it->second->prepValue(values,VALUE);
+        }
+        return values;
     }
 
-    ConfigDescription Dynamica::makeDescription() {
-        ConfigDescription conf_desc;
-        Group group; // registers level, type, description.
-
-        // action 1 - prepping the Group msg for all params
-        group.name = "default";
-        for(ParamMap::const_iterator it = params_.begin(); it != params_.end(); it++) { it->second->prepInfo(group);}
-
-        // action 2 - prepping the ConfigDescription msg for all params
-        for(ParamMap::const_iterator it = params_.begin(); it != params_.end(); it++) {it->second->prepConfigDescription(conf_desc);}
-        conf_desc.groups.push_back(group);
-        return conf_desc;
+    ParamInfoList Dynamica::makeInfo() {
+        ParamInfoList info;
+        for(ParamMap::const_iterator it = params_.begin(); it != params_.end(); it++) {
+            it->second->prepInfo(info);
+        }
+        return info;
     };
 
     void Dynamica::start(ReconfigureFunction callback) {
@@ -113,7 +102,7 @@ namespace dynamica {
     };
 
     // Private function: internal callback used by the service to call our lovely callback.
-    bool Dynamica::internalCallback(Dynamica *obj, Reconfigure::Request& req, Reconfigure::Response& rsp) {
+    bool Dynamica::internalCallback(Dynamica *obj, ChangeCommand::Request& req, ChangeCommand::Response& rsp) {
         ROS_DEBUG_STREAM("Called config callback of dynamica");
 
         int level = obj->getUpdates(req, obj->params_);
@@ -128,39 +117,15 @@ namespace dynamica {
             }
         }
 
-        obj->update_pub_.publish(obj->makeConfig()); // updates the config
+        obj->value_pub_.publish(obj->makeValues()); // updates the config
 
         return true;
     }
 
-    int Dynamica::getUpdates(const Reconfigure::Request &req, ParamMap &config) {
+    int Dynamica::getUpdates(const ChangeCommand::Request &req, ParamMap &config) {
         int level = 0;
         // the ugly part of the code, since ROS does not provide a nice generic message. Oh well...
-        BOOST_FOREACH(const IntParameter i,req.config.ints) {
-            int new_level = reassign(config, i.name, i.value);
-            if(new_level == -1) {
-                ROS_ERROR_STREAM("Variable [" << i.name << "] is not registered");
-            } else {
-                level |= new_level;
-            }
-        }
-        BOOST_FOREACH(const DoubleParameter i,req.config.doubles) {
-            int new_level = reassign(config, i.name, i.value);
-            if(new_level == -1) {
-                ROS_ERROR_STREAM("Variable [" << i.name << "] is not registered");
-            } else {
-                level |= new_level;
-            }
-        }
-        BOOST_FOREACH(const BoolParameter i,req.config.bools) {
-            int new_level = reassign(config, i.name, (bool)i.value);
-            if(new_level == -1) {
-                ROS_ERROR_STREAM("Variable [" << i.name << "] is not registered");
-            } else {
-                level |= new_level;
-            }
-        }
-        BOOST_FOREACH(const StrParameter i,req.config.strs) {
+        BOOST_FOREACH(const ParamValue i,req.new_params.entries) {
             int new_level = reassign(config, i.name, i.value);
             if(new_level == -1) {
                 ROS_ERROR_STREAM("Variable [" << i.name << "] is not registered");
