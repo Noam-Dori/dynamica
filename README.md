@@ -3,7 +3,7 @@ Dynamica
 
 Dynamica is the successor to the ROS standard package [dynamic_reconfigure](http://wiki.ros.org/dynamic_reconfigure).
 It includes the features included in its extensions 
-[dynamica](https://github.com/awesomebytes/dynamica) 
+[ddynamic_reconfigure](https://github.com/awesomebytes/ddyanmic_reconfigure) 
 and [3d_reconfigure](https://github.com/wew84/3d_reconfigure)
 
 ## Dependencies
@@ -23,7 +23,7 @@ Other than the installation of the package to your workspace, no other configura
 The package used is called ``dynamica``,
 and this both the namespace and the include directory used to implement the program.
 
-#FROM HERE STUFF IS NOT RIGHT AND WILL BE CHANGED IN DUE TIME
+# FROM HERE STUFF IS NOT RIGHT AND WILL BE CHANGED IN DUE TIME
 
 ## Implementation
 let us look into the following code, which implements Dynamica:
