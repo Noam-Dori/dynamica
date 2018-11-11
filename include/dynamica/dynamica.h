@@ -134,6 +134,17 @@ namespace dynamica {
         ParamPtr at(const char* name);
 
         /**
+         * @brief a tool people can use to get the parameter, and cast it to a proper class.
+         * @param name the string to look for
+         * @tparam T the class to cast this to. Make sure it extends {@class Param}
+         * @return the param with the given name if it exists, nullptr otherwise
+         */
+        template<class T>
+        boost::shared_ptr<T> atCast(const char* name) {
+            return boost::static_pointer_cast<T>(at(name));
+        }
+
+        /**
          * @brief the operator taking care of streaming the param values
          * @param os the stream to place the param into
          * @param dd the dd-reconfigure you want to place into the stream
@@ -183,24 +194,34 @@ namespace dynamica {
 
         /**
          * @brief reassigns a value to the internal map assuming it is registered.
-         * @param map the map that is being edited
          * @param name the name of the parameter to test
          * @param value the value of the new parameter
-         * @tparam T the type of value
          * @return -1 if the value could not be reassigned,
          *         0 if the value was not changed,
          *         otherwise the level of the parameter changed.
          */
-         template <class T>
-         static int reassign(ParamMap& map, const std::string &name, T value);
+        int reassignValue(const std::string &name, Value value);
+
+        /**
+         * @brief reassigns a value to the internal map assuming it is registered.
+         * @param map the map that is being edited
+         * @param name the name of the parameter to test
+         * @param value the value of the new parameter
+         * @param property the enum assigned property:
+         *        DEFAULT is the default property
+         *        LEVEL is the level property
+         *        MAX is the max property
+         *        MIN is the min property
+         * @return false if the value could not be reassigned, otherwise true.
+         */
+        bool reassignAttribute(const std::string &name, const Value &value, Attribute property);
 
         /**
          * @brief gets the updates and assigns them to DDMap
          * @param req the ROS request holding info about the new map
-         * @param config the map to update
          * @return the level of change (integer)
          */
-         int getUpdates(const ChangeCommand::Request &req, ParamMap &config);
+        int update(const ChangeCommand::Request &req);
 
          /**
           * @brief the use defined callback to call when parameters are updated.
@@ -223,6 +244,18 @@ namespace dynamica {
      * @return the param with the given name if it exists, nullptr otherwise
      */
      ParamPtr at(const ParamMap& map, const char* name); // I could do this with an operator, but its bad design.
+
+    /**
+     * @brief a tool people can use to get the parameter, and cast it to a proper class.
+     * @param name the string to look for
+     * @param map the map to search
+     * @tparam T the class to cast this to. Make sure it extends {@class Param}
+     * @return the param with the given name if it exists, nullptr otherwise
+     */
+    template<class T>
+    boost::shared_ptr<T> atCast(const ParamMap& map, const char* name) {
+        return boost::static_pointer_cast<T>(at(map,name));
+    }
 
     /**
      * @brief a tool people who use this API can use to find the value given within the param map.

@@ -20,8 +20,8 @@ class DDynamicReconfigure {
     #makeInfo() : void
     #makeValues() : void
     #{static} internalCallback() : bool
-    -reassign() <<T>> : int
-    -getUpdates() : int
+    -reassignValue() <<T>> : int
+    -update() : int
 }
 note right: ParamPtr := shared_ptr<Param>\nDDMap := map<string,ParamPtr>\nDDFunc := function<void(const ParamMap&,int)>
 class DDValue {

@@ -17,7 +17,8 @@ namespace dynamica {
         VALUE = 0,
         DEFAULT = 1,
         MAX = 2,
-        MIN = 3
+        MIN = 3,
+        LEVEL = -1
     };
 
     class Param;// declaration for the sake of order.

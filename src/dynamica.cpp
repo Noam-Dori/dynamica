@@ -105,7 +105,7 @@ namespace dynamica {
     bool Dynamica::internalCallback(Dynamica *obj, ChangeCommand::Request& req, ChangeCommand::Response& rsp) {
         ROS_DEBUG_STREAM("Called config callback of dynamica");
 
-        int level = obj->getUpdates(req, obj->params_);
+        int level = obj->update(req);
 
         if (obj->callback_) {
             try {
@@ -122,11 +122,11 @@ namespace dynamica {
         return true;
     }
 
-    int Dynamica::getUpdates(const ChangeCommand::Request &req, ParamMap &config) {
+    int Dynamica::update(const ChangeCommand::Request &req) {
         int level = 0;
         // the ugly part of the code, since ROS does not provide a nice generic message. Oh well...
         BOOST_FOREACH(const ParamValue i,req.new_params.entries) {
-            int new_level = reassign(config, i.name, i.value);
+            int new_level = reassignValue(i.name, Value(i.value));
             if(new_level == -1) {
                 ROS_ERROR_STREAM("Variable [" << i.name << "] is not registered");
             } else {
@@ -136,17 +136,59 @@ namespace dynamica {
         return level;
     }
 
-    template <class T>
-    int Dynamica::reassign(ParamMap& map, const string &name, T value) {
-        Value val(value); // abusing C++ against generic types here.
-        if(map.find(name) != map.end() && map[name]->sameType(val)) {
-            ParamPtr old = map[name]; // this is the old map which might be updated.
-            if(old->sameValue(val)) { return 0;} else {
-                old->setValue(val);
+
+    int Dynamica::reassignValue(const string &name, Value value) {
+        if(params_.find(name) != params_.end()) {
+            ParamPtr old = params_[name]; // this is the old map which might be updated.
+            if(old->sameValue(value)) { return 0;} else {
+                old->setValue(value);
                 return old->getLevel();
             }
         } else {
             return -1;
+        }
+    }
+
+    bool Dynamica::reassignAttribute(const string &name, const Value &value, Attribute property) {
+        if(params_.find(name) != params_.end()) { // if the param with the given name exists,
+            // and either you are modifying the level,
+            // or its same same type as the member param.
+            if(DDDPtr old = dynamic_pointer_cast<DDDParam>(map[name])) {
+                switch (property) {
+                    default: {
+                        ROS_WARN_STREAM("Asked to edit unknown property of parameter [" << name << "]. Ignored.");
+                        return true;
+                    }
+                    case DEFAULT: {
+                        old->setDefault(value);
+                        return true;
+                    }
+                    case LEVEL: {
+                        old->setLevel((unsigned int) value.toInt());
+                        return true;
+                    }
+                    case MAX: {
+                        if (old->isOrdered()) {
+                            dynamic_pointer_cast<DDDOrdered>(old)->setMax(value);
+                        } else {
+                            ROS_WARN_STREAM("Asked to edit range property of parameter [" << name
+                                                                                          << "], which does not have range properties. Ignored.");
+                        }
+                        return true;
+                    }
+                    case MIN: {
+                        if (old->isOrdered()) {
+                            dynamic_pointer_cast<DDDOrdered>(old)->setMin(value);
+                        } else {
+                            ROS_WARN_STREAM("Asked to edit range property of parameter [" << name
+                                                                                          << "], which does not have range properties. Ignored.");
+                        }
+                        return true;
+                    }
+                }
+            }
+        } else {
+            return false;
         }
     }
 

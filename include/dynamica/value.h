@@ -4,6 +4,7 @@
 #include <string>
 #include <sstream>
 #include <boost/functional/hash.hpp>
+#include <cstdio>
 
 #ifndef DYNAMICA_VALUE_H
 #define DYNAMICA_VALUE_H
