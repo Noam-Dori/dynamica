@@ -124,9 +124,8 @@ namespace dynamica {
 
     int Dynamica::update(const ChangeCommand::Request &req) {
         int level = 0;
-        // the ugly part of the code, since ROS does not provide a nice generic message. Oh well...
         BOOST_FOREACH(const ParamValue i,req.new_params.entries) {
-            int new_level = reassignValue(i.name, Value(i.value));
+            int new_level = reassignValue(i.name, i.value);
             if(new_level == -1) {
                 ROS_ERROR_STREAM("Variable [" << i.name << "] is not registered");
             } else {
@@ -150,6 +149,9 @@ namespace dynamica {
     }
 
     bool Dynamica::reassignAttribute(const string &name, const Value &value, Attribute property) {
+        if(property == VALUE) {
+            return false;
+        }
         if(params_.find(name) != params_.end()) { // if the param with the given name exists,
             // and either you are modifying the level,
             // or its same same type as the member param.

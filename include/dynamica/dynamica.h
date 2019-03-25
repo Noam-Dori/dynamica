@@ -212,7 +212,7 @@ namespace dynamica {
          *        LEVEL is the level property
          *        MAX is the max property
          *        MIN is the min property
-         * @return false if the value could not be reassigned, otherwise true.
+         * @return false if the attribute could not be reassigned, otherwise true.
          */
         bool reassignAttribute(const std::string &name, const Value &value, Attribute property);
 
